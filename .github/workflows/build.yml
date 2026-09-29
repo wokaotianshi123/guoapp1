@@ -223,7 +223,12 @@ jobs:
 
   release:
     needs: [android, ios, windows]
-    if: always() && github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.android.result == 'success' && needs.ios.result == 'success'
+    # 支持 main 分支 push 或 手动触发 (workflow_dispatch)，且要求 Android/iOS/Windows 全部成功
+    if: >-
+      (github.event_name == 'push' && github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch') &&
+      needs.android.result == 'success' &&
+      needs.ios.result == 'success' &&
+      needs.windows.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
